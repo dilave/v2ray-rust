@@ -15,7 +15,7 @@ pub mod vmess_stream;
 
 #[derive(Clone)]
 pub struct VmessBuilder {
-    pub(crate) vmess_option: VmessOption,
+    pub vmess_option: VmessOption,
 }
 
 #[async_trait]
