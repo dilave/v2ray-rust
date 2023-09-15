@@ -6,12 +6,15 @@ use crate::proxy::{
 };
 use async_trait::async_trait;
 
+
 use boring::ssl::{SslConnector, SslSignatureAlgorithm};
 use boring::ssl::{SslMethod, SslVersion};
 use foreign_types_shared::ForeignTypeRef;
 use std::io;
 
+#[cfg(feature = "enable_boring_sys")]
 use tokio_boring::{connect, SslStream};
+
 
 #[cfg(target_os = "macos")]
 use super::macos as platform;
