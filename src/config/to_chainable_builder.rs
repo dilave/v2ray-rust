@@ -1,12 +1,18 @@
 use crate::config::{
-    BlackHoleConfig, DirectConfig, GrpcConfig, Http2Config, ShadowsocksConfig, TlsConfig,
+    BlackHoleConfig, DirectConfig, GrpcConfig, Http2Config, ShadowsocksConfig,
     TrojanConfig, VmessConfig, WebsocketConfig, SS_LOCAL_SHARED_CONTEXT,
+};
+
+#[cfg(feature = "enable_useless")]
+use crate::config::{
+    TlsConfig
 };
 use crate::proxy::blackhole::BlackHoleStreamBuilder;
 use crate::proxy::direct::DirectStreamBuilder;
 use crate::proxy::grpc::GrpcStreamBuilder;
 use crate::proxy::h2::Http2StreamBuilder;
 use crate::proxy::shadowsocks::ShadowsocksBuilder;
+#[cfg(feature = "enable_useless")]
 use crate::proxy::tls::TlsStreamBuilder;
 use crate::proxy::trojan::TrojanStreamBuilder;
 use crate::proxy::vmess::vmess_option::VmessOption;
@@ -89,6 +95,8 @@ impl ToChainableStreamBuilder for TrojanConfig {
         Some(self.addr.clone())
     }
 }
+
+#[cfg(feature = "enable_useless")]
 impl ToChainableStreamBuilder for TlsConfig {
     fn to_chainable_stream_builder(
         &self,

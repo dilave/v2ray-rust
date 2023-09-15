@@ -6,13 +6,15 @@ use crate::proxy::{
 };
 use async_trait::async_trait;
 
-
+#[cfg(feature = "enable_useless")]
 use boring::ssl::{SslConnector, SslSignatureAlgorithm};
+#[cfg(feature = "enable_useless")]
 use boring::ssl::{SslMethod, SslVersion};
+
 use foreign_types_shared::ForeignTypeRef;
 use std::io;
 
-#[cfg(feature = "enable_boring_sys")]
+#[cfg(feature = "enable_useless")]
 use tokio_boring::{connect, SslStream};
 
 
@@ -23,6 +25,7 @@ use super::unix as platform;
 #[cfg(windows)]
 use super::windows as platform;
 
+#[cfg(feature = "enable_useless")]
 #[derive(Clone)]
 pub struct TlsStreamBuilder {
     connector: SslConnector,
@@ -30,7 +33,7 @@ pub struct TlsStreamBuilder {
     verify_hostname: bool,
     verify_sni: bool,
 }
-
+#[cfg(feature = "enable_useless")]
 impl TlsStreamBuilder {
     pub fn new_from_config(
         sni: String,
@@ -81,7 +84,6 @@ impl TlsStreamBuilder {
         configuration.enable_signed_cert_timestamps();
         configuration.enable_ocsp_stapling();
         configuration.set_grease_enabled(true);
-        #[cfg(feature = "enable_boring_sys")]
         unsafe {
             boring_sys::SSL_CTX_add_cert_compression_alg(
                 configuration.as_ptr(),
@@ -98,17 +100,16 @@ impl TlsStreamBuilder {
         }
     }
 }
-
+#[cfg(feature = "enable_useless")]
 impl<S: ProxyUdpStream> UdpRead for SslStream<S> {}
-
+#[cfg(feature = "enable_useless")]
 impl<S: ProxyUdpStream> UdpWrite for SslStream<S> {}
-
+#[cfg(feature = "enable_useless")]
 macro_rules! build_tcp_impl {
     ($name:tt,$io:tt) => {
         let mut configuration = $name.connector.configure().unwrap();
         configuration.set_use_server_name_indication($name.verify_sni);
         configuration.set_verify_hostname($name.verify_hostname);
-        #[cfg(feature = "enable_boring_sys")]
         unsafe {
             boring_sys::SSL_add_application_settings(
                 configuration.as_ptr(),
@@ -129,7 +130,7 @@ macro_rules! build_tcp_impl {
         };
     };
 }
-
+#[cfg(feature = "enable_useless")]
 #[async_trait]
 impl ChainableStreamBuilder for TlsStreamBuilder {
     async fn build_tcp(&self, io: BoxProxyStream) -> io::Result<BoxProxyStream> {
@@ -159,7 +160,7 @@ impl ChainableStreamBuilder for TlsStreamBuilder {
         ProtocolType::Tls
     }
 }
-#[cfg(feature = "enable_boring_sys")]
+#[cfg(feature = "enable_useless")]
 extern "C" fn decompress_ssl_cert(
     _ssl: *mut boring_sys::SSL,
     out: *mut *mut boring_sys::CRYPTO_BUFFER,
@@ -191,7 +192,7 @@ extern "C" fn decompress_ssl_cert(
         }
     }
 }
-
+#[cfg(feature = "enable_useless")]
 #[cfg(all(target_os = "linux", test))]
 mod tests {
     use crate::proxy::tls::tls_stream::TlsStreamBuilder;
