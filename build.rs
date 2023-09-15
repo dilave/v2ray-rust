@@ -1,3 +1,4 @@
+#[cfg(feature = "enable_useless")]
 use protobuf_codegen::Customize;
 
 fn main() {
@@ -10,10 +11,12 @@ fn main() {
         .compile(&["src/api/api.proto"], &["src/api/"])
         .unwrap();
     //tonic_build::compile_protos("src/api/api.proto").unwrap();
+    #[cfg(feature = "enable_useless")]
     let customize = Customize::default()
         .gen_mod_rs(false)
         .tokio_bytes(true)
         .generate_getter(true);
+    #[cfg(feature = "enable_useless")]
     protobuf_codegen::Codegen::new()
         .out_dir("src/")
         .customize(customize)

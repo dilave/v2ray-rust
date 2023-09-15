@@ -1,4 +1,5 @@
 use crate::common::new_error;
+#[cfg(feature = "enable_useless")]
 use boring::x509::X509;
 use security_framework::trust_settings::{Domain, TrustSettings, TrustSettingsForCertificate};
 use std::io;
@@ -7,6 +8,7 @@ use std::collections::HashMap;
 use std::io::{Error, ErrorKind};
 
 // Adapted from https://github.com/rustls/rustls-native-certs
+#[cfg(feature = "enable_useless")]
 pub fn load_native_certs() -> io::Result<Vec<X509>> {
     // The various domains are designed to interact like this:
     //
@@ -47,6 +49,7 @@ pub fn load_native_certs() -> io::Result<Vec<X509>> {
 
     // Now we have all the certificates and an idea of whether
     // to use them.
+    #[cfg(feature = "enable_useless")]
     for (der, trusted) in all_certs.drain() {
         use TrustSettingsForCertificate::*;
         if let TrustRoot | TrustAsRoot = trusted {

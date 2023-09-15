@@ -72,7 +72,7 @@ opt-level = 3
 strip = true
 
 [build-dependencies]
-protobuf-codegen = "3.2.0"
+#protobuf-codegen = "3.2.0"
 #tonic-build = "0.8" #enable_useless
 
 [target.'cfg(windows)'.dependencies]
