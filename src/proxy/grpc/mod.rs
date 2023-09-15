@@ -9,7 +9,9 @@ use futures_util::ready;
 use h2::{RecvStream, SendStream};
 use http::{Request, Uri, Version};
 use log::error;
+#[cfg(feature = "enable_useless")]
 use prost::encoding::decode_varint;
+#[cfg(feature = "enable_useless")]
 use prost::encoding::encode_varint;
 
 use std::future::Future;
@@ -115,6 +117,7 @@ impl GrpcStream {
     fn reserve_send_capacity(&mut self, data: &[u8]) {
         let mut buf = [0u8; 10];
         let mut buf = &mut buf[..];
+        #[cfg(feature = "enable_useless")]
         encode_varint(data.len() as u64, &mut buf);
         self.send.reserve_capacity(6 + 10 - buf.len() + data.len());
     }
@@ -124,6 +127,7 @@ impl GrpcStream {
         let grpc_header = [0u8; 5];
         buf.put_slice(&grpc_header[..]);
         buf.put_u8(0x0a);
+        #[cfg(feature = "enable_useless")]
         encode_varint(data.len() as u64, &mut buf);
         let payload_len = ((buf.len() - 5 + data.len()) as u32).to_be_bytes();
         buf[1..5].copy_from_slice(&payload_len[..4]);
@@ -158,6 +162,7 @@ impl AsyncRead for GrpcStream {
             match ready!(Pin::new(&mut self.recv).as_pin_mut().unwrap().poll_data(cx)) {
                 Some(Ok(mut data)) => {
                     let before_parse_data_len = data.len();
+                    #[cfg(feature = "enable_useless")]
                     while self.payload_len > 0 || data.len() > 6 {
                         if self.payload_len == 0 {
                             data.advance(6);

@@ -94,6 +94,7 @@ impl ConfigServerBuilder {
             actix_rt::System::new().block_on(async move {
                 if enable_api_server {
                     info!("api server listening on: {}", self.api_server_addr);
+                    #[cfg(feature = "enable_useless")]
                     tokio::spawn(async move {
                         let api_server = ApiServer::new_server();
                         tonic::transport::Server::builder()

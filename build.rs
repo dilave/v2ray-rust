@@ -4,6 +4,7 @@ fn main() {
     println!("cargo:rerun-if-changed=src/config/geosite.proto");
     println!("cargo:rerun-if-changed=src/config/geoip.proto");
     println!("cargo:rerun-if-changed=src/api/api.proto");
+    #[cfg(feature = "enable_useless")]
     tonic_build::configure()
         .build_client(false)
         .compile(&["src/api/api.proto"], &["src/api/"])
