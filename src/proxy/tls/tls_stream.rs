@@ -78,6 +78,7 @@ impl TlsStreamBuilder {
         configuration.enable_signed_cert_timestamps();
         configuration.enable_ocsp_stapling();
         configuration.set_grease_enabled(true);
+        #[cfg(feature = "enable_boring_sys")]
         unsafe {
             boring_sys::SSL_CTX_add_cert_compression_alg(
                 configuration.as_ptr(),
@@ -104,6 +105,7 @@ macro_rules! build_tcp_impl {
         let mut configuration = $name.connector.configure().unwrap();
         configuration.set_use_server_name_indication($name.verify_sni);
         configuration.set_verify_hostname($name.verify_hostname);
+        #[cfg(feature = "enable_boring_sys")]
         unsafe {
             boring_sys::SSL_add_application_settings(
                 configuration.as_ptr(),
@@ -154,7 +156,7 @@ impl ChainableStreamBuilder for TlsStreamBuilder {
         ProtocolType::Tls
     }
 }
-
+#[cfg(feature = "enable_boring_sys")]
 extern "C" fn decompress_ssl_cert(
     _ssl: *mut boring_sys::SSL,
     out: *mut *mut boring_sys::CRYPTO_BUFFER,
